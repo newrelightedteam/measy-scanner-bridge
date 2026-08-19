@@ -1,4 +1,11 @@
-require("dotenv").config();
+const path = require("path");
+const { app } = require("electron");
+
+const envPath = app.isPackaged
+  ? path.join(process.resourcesPath, ".env")
+  : path.join(__dirname, "..", ".env");
+
+require("dotenv").config({ path: envPath });
 
 module.exports = {
     host: process.env.HOST || '127.0.0.1',
