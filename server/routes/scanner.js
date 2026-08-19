@@ -31,4 +31,10 @@ router.delete("/api/files/:id", (req, res) => {
   });
 });
 
+router.get('/hello',(req,res) => {
+  res.json({
+    "message" : "Hello"
+  });
+});
+
 module.exports = router;
