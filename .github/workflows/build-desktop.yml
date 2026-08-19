@@ -1,0 +1,93 @@
+name: Build Mac + Windows apps
+
+# Builds unsigned installers for macOS and Windows on GitHub's hosted
+# runners, so you don't need to own either OS yourself. Linux is
+# intentionally left out for now.
+#
+# - workflow_dispatch (manual run) or a push to any branch: builds only,
+#   does NOT publish a GitHub Release. Good for verifying the build works.
+# - push of a tag like "v1.0.0": builds AND publishes a GitHub Release,
+#   uploading the installers plus latest.yml (Windows only needs this;
+#   it's what electron-updater reads to detect new versions). Mac is
+#   unsigned right now, so it's uploaded for manual download only -
+#   the app itself doesn't check for mac updates yet.
+#
+# .env is generated fresh on the runner from repo secrets before every
+# build (dev and publish) so the packaged app has real config values.
+# It is never committed - only ever written into this ephemeral runner.
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+# Needed so the built-in GITHUB_TOKEN can create a Release and upload
+# assets to this repo when a tag is pushed.
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            artifact_name: scanner-bridge-mac
+            artifact_paths: |
+              dist/*.dmg
+              dist/*.zip
+          - os: windows-latest
+            artifact_name: scanner-bridge-windows
+            artifact_paths: |
+              dist/*.exe
+              dist/latest.yml
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create .env file
+        shell: bash
+        run: |
+          cat <<EOF > .env
+          HOST=127.0.0.1
+          PORT=5151
+          API_KEY=${{ secrets.API_KEY }}
+          LARAVEL_URL=${{ secrets.LARAVEL_URL }}
+          LARAVEL_UPLOAD_ENDPOINT=${{ secrets.LARAVEL_UPLOAD_ENDPOINT }}
+          LARAVEL_API_TOKEN=${{ secrets.LARAVEL_API_TOKEN }}
+          EOF
+
+      - name: Build and publish (tag push only)
+        if: startsWith(github.ref, 'refs/tags/')
+        # CSC_IDENTITY_AUTO_DISCOVERY=false stops electron-builder from
+        # trying to sign with any certificate it happens to find on the
+        # runner, so the mac output is reliably unsigned.
+        # GH_TOKEN lets electron-builder create/attach to the GitHub
+        # Release matching this tag and upload installers + latest.yml.
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx electron-builder --publish always
+
+      - name: Build only (manual run / non-tag push)
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        run: npx electron-builder --publish never
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact_paths }}

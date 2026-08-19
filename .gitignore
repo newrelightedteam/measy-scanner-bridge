@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+out/
+build/
+
+# Electron-builder cache
+.electron-builder-cache/
+
+# Env files (contains secrets, API keys, tokens)
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+logs/
+
+# electron-log runtime output (if written into project during dev)
+electron-log.log
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# NAPS2 installer binary (large, platform-specific; keep out of git,
+# fetch/download separately or store via Git LFS / release asset instead)
+# installer/*.exe
+
+# Temp/scratch
+tmp/
+temp/
+*.tmp

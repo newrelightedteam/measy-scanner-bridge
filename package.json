@@ -1,0 +1,88 @@
+{
+  "name": "scanner-bridge",
+  "version": "1.0.1",
+  "description": "Scanner Bridge desktop application for scanning documents and uploading them to a server.",
+  "author": "saugatR",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "electron .",
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac zip"
+  },
+  "dependencies": {
+    "auto-launch": "^5.0.6",
+    "axios": "^1.18.1",
+    "cors": "^2.8.6",
+    "dotenv": "^16",
+    "electron-log": "^5.4.4",
+    "electron-updater": "^6.8.9",
+    "express": "^5",
+    "form-data": "^4.0.6",
+    "multer": "^2.2.0",
+    "uuid": "^14.0.1"
+  },
+  "devDependencies": {
+    "electron": "^43.4.1",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.saugatrana.scannerbridge1",
+    "productName": "MEasy Scanner Bridge",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*"
+    ],
+    "publish": {
+      "provider": "github",
+      "owner": "newrelightedteam",
+      "repo": "measy-scanner-bridge",
+      "private": false
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico",
+      "extraResources": [
+        {
+          "from": "installer/NAPS2.Setup.exe",
+          "to": "installer/NAPS2.Setup.exe"
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": false,
+      "createStartMenuShortcut": true,
+      "runAfterFinish": true
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.icns",
+      "category": "public.app-category.productivity",
+      "identity": null,
+      "minimumSystemVersion": "11.0.0"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "assets/icon.png",
+      "category": "Utility",
+      "maintainer": "saugatR"
+    }
+  }
+}
