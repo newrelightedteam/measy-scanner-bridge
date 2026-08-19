@@ -1,6 +1,6 @@
 {
   "name": "scanner-bridge",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Scanner Bridge desktop application for scanning documents and uploading them to a server.",
   "author": "saugatR",
   "main": "electron/main.js",
