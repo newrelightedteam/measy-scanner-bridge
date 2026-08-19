@@ -49,6 +49,10 @@
         {
           "from": "installer/NAPS2.Setup.exe",
           "to": "installer/NAPS2.Setup.exe"
+        },
+        {
+          "from": ".env",
+          "to": ".env"
         }
       ]
     },
@@ -68,6 +72,12 @@
             "x64",
             "arm64"
           ]
+        }
+      ],
+      "extraResources": [
+        {
+          "from": ".env",
+          "to": ".env"
         }
       ],
       "icon": "assets/icon.icns",
